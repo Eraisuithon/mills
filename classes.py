@@ -82,17 +82,20 @@ class Board:
             self.board[x][y] = self.X
 
     def play(self):
+        played = []
         while True:
             key = int(input("Circle's Turn: "))
-            while not 0 <= key <= 23:
-                key = input('Enter a val in the range [0, 23]: ')
+            while not 0 <= key <= 23 or key in played:
+                key = int(input('Enter a val in the range [0, 23]: '))
 
             self.make_the_move(key)
+            played.append(key)
             self.show()
 
             key = int(input("X's Turn: "))
-            while not 0 <= key <= 23:
-                key = input('Enter a val in the range [0, 23]: ')
+            while not 0 <= key <= 23 or key in played:
+                key = int(input('Enter a val in the range [0, 23]: '))
 
             self.make_the_move(key, False)
+            played.append(key)
             self.show()

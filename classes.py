@@ -1,7 +1,8 @@
 class Board:
     def __init__(self):
-        self.X = 'X'
-        self.circle = '●'
+        self.state = None
+        self.second = 'X'
+        self.first = '●'
         self.board = []
         self.side_length = 19
         self.playable_pos = {
@@ -33,6 +34,7 @@ class Board:
         self.initialize()
 
     def initialize(self):
+        self.state = '0' * 24
         for _ in range(self.side_length):
             row = []
             for _ in range(self.side_length):
@@ -74,28 +76,62 @@ class Board:
                 print(self.board[i][j], end=' ')
             print()
 
-    def make_the_move(self, key, is_circle=True):
+    def make_the_move(self, key, is_first=True):
         x, y = self.playable_pos[key]
-        if is_circle:
-            self.board[x][y] = self.circle
+        if is_first:
+            self.board[x][y] = self.first
+            val_for_state = 1
         else:
-            self.board[x][y] = self.X
+            self.board[x][y] = self.second
+            val_for_state = 2
 
-    def play(self):
+        self.state = f"{self.state[:key]}{val_for_state}{self.state[key + 1:]}"
+
+    def player_move(self, played, is_first=True):
+        string = "first's turn: " if is_first else "Second's turn: "
+        key = int(input(string))
+        while not 0 <= key <= 23 or key in played:
+            key = int(input('Enter a val in the range [0, 23]: '))
+        self.make_the_move(key, is_first)
+
+        played.append(key)
+        return played
+
+    def computer_move(self, played, is_first=True):
+        key = 0
+        for k, val in enumerate(self.state):
+            if val == '0':
+                key = k
+                break
+
+        self.make_the_move(key, is_first)
+        played.append(key)
+        return played
+
+    def pvp(self):
         played = []
         while True:
-            key = int(input("Circle's Turn: "))
-            while not 0 <= key <= 23 or key in played:
-                key = int(input('Enter a val in the range [0, 23]: '))
-
-            self.make_the_move(key)
-            played.append(key)
+            played = self.player_move(played)
             self.show()
 
-            key = int(input("X's Turn: "))
-            while not 0 <= key <= 23 or key in played:
-                key = int(input('Enter a val in the range [0, 23]: '))
-
-            self.make_the_move(key, False)
-            played.append(key)
+            played = self.player_move(played, is_first=False)
             self.show()
+
+    def pvc(self, is_computer_first=False):
+        played = []
+        is_player_first = True
+        if is_computer_first:
+            is_player_first = False
+            self.computer_move(played)
+            self.show()
+
+        while True:
+            played = self.player_move(played, is_player_first)
+            self.show()
+
+            print(self.state)
+            print("Computer's turn: ")
+
+            played = self.computer_move(played, not is_player_first)
+            self.show()
+            print(self.state)

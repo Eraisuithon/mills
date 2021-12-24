@@ -1,6 +1,8 @@
 class Board:
     def __init__(self):
         self.state = None
+        self.available_X = 9
+        self.available_0 = 9
         self.second = 'X'
         self.first = '●'
         self.board = []
@@ -35,6 +37,8 @@ class Board:
 
     def initialize(self):
         self.state = '0' * 24
+        self.available_X = 9
+        self.available_0 = 9
         for _ in range(self.side_length):
             row = []
             for _ in range(self.side_length):
@@ -80,9 +84,11 @@ class Board:
         x, y = self.playable_pos[key]
         if is_first:
             self.board[x][y] = self.first
+            self.available_0 -= 1
             val_for_state = 1
         else:
             self.board[x][y] = self.second
+            self.available_X -= 1
             val_for_state = 2
 
         self.state = f"{self.state[:key]}{val_for_state}{self.state[key + 1:]}"
@@ -110,7 +116,7 @@ class Board:
 
     def pvp(self):
         played = []
-        while True:
+        while not self.available_X == self.available_0 == 0:
             played = self.player_move(played)
             self.show()
 
@@ -125,13 +131,13 @@ class Board:
             self.computer_move(played)
             self.show()
 
-        while True:
+        while not self.available_X == self.available_0 == 0:
             played = self.player_move(played, is_player_first)
             self.show()
 
-            print(self.state)
+            if self.available_X == self.available_0 == 9:
+                break
             print("Computer's turn: ")
 
             played = self.computer_move(played, not is_player_first)
             self.show()
-            print(self.state)

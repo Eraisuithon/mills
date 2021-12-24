@@ -95,9 +95,10 @@ class Board:
 
     def player_move(self, played, is_first=True):
         string = "first's turn: " if is_first else "Second's turn: "
-        key = int(input(string))
-        while not 0 <= key <= 23 or key in played:
-            key = int(input('Enter a val in the range [0, 23]: '))
+        key = input(string)
+        while not key.isnumeric() or not 0 <= int(key) <= 23 or key in played:
+            key = input('Enter a valid number in the range [0, 23]: ')
+        key = int(key)
         self.make_the_move(key, is_first)
 
         played.append(key)

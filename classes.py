@@ -1,5 +1,7 @@
 class Board:
     def __init__(self):
+        self.playable_pos = None
+        self.neighbors = None
         self.state = None
         self.Xs_on_board = 0
         self.Os_on_board = 0
@@ -8,32 +10,6 @@ class Board:
         self.first = '●'
         self.board = []
         self.side_length = 19
-        self.playable_pos = {
-            0: (0, 0),
-            1: (0, self.side_length // 2),
-            2: (0, self.side_length - 1),
-            3: (3, 3),
-            4: (3, self.side_length // 2),
-            5: (3, self.side_length - 4),
-            6: (6, 6),
-            7: (6, self.side_length // 2),
-            8: (6, self.side_length - 7),
-            9: (self.side_length // 2, 0),
-            10: (self.side_length // 2, 3),
-            11: (self.side_length // 2, 6),
-            12: (self.side_length // 2, self.side_length - 7),
-            13: (self.side_length // 2, self.side_length - 4),
-            14: (self.side_length // 2, self.side_length - 1),
-            15: (self.side_length - 7, 6),
-            16: (self.side_length - 7, self.side_length // 2),
-            17: (self.side_length - 7, self.side_length - 7),
-            18: (self.side_length - 4, 3),
-            19: (self.side_length - 4, self.side_length // 2),
-            20: (self.side_length - 4, self.side_length - 4),
-            21: (self.side_length - 1, 0),
-            22: (self.side_length - 1, self.side_length // 2),
-            23: (self.side_length - 1, self.side_length - 1)
-        }
         self.initialize()
 
     def initialize(self):
@@ -72,8 +48,62 @@ class Board:
             for j in range(7, self.side_length - 7):
                 self.board[i][j] = ' '
 
+        self.playable_pos = {
+            0: (0, 0),
+            1: (0, self.side_length // 2),
+            2: (0, self.side_length - 1),
+            3: (3, 3),
+            4: (3, self.side_length // 2),
+            5: (3, self.side_length - 4),
+            6: (6, 6),
+            7: (6, self.side_length // 2),
+            8: (6, self.side_length - 7),
+            9: (self.side_length // 2, 0),
+            10: (self.side_length // 2, 3),
+            11: (self.side_length // 2, 6),
+            12: (self.side_length // 2, self.side_length - 7),
+            13: (self.side_length // 2, self.side_length - 4),
+            14: (self.side_length // 2, self.side_length - 1),
+            15: (self.side_length - 7, 6),
+            16: (self.side_length - 7, self.side_length // 2),
+            17: (self.side_length - 7, self.side_length - 7),
+            18: (self.side_length - 4, 3),
+            19: (self.side_length - 4, self.side_length // 2),
+            20: (self.side_length - 4, self.side_length - 4),
+            21: (self.side_length - 1, 0),
+            22: (self.side_length - 1, self.side_length // 2),
+            23: (self.side_length - 1, self.side_length - 1)
+        }
+
         for key, (x, y) in self.playable_pos.items():
             self.board[x][y] = self.clear
+
+        self.neighbors = {
+            0: (1, 9),
+            1: (0, 2, 4),
+            2: (1, 14),
+            3: (4, 10),
+            4: (3, 5, 1, 7),
+            5: (6, 13),
+            6: (7, 11),
+            7: (6, 8, 4),
+            8: (7, 12),
+            9: (0, 10, 21),
+            10: (3, 9, 11, 18),
+            11: (10, 6, 15),
+            12: (8, 13, 17),
+            13: (12, 5, 14, 20),
+            14: (13, 2, 23),
+            15: (11, 16),
+            16: (15, 17, 19),
+            17: (16, 12),
+            18: (10, 19),
+            19: (18, 20, 16, 22),
+            20: (19, 13),
+            21: (9, 22),
+            22: (21, 23, 19),
+            23: (22, 14)
+        }
 
     def show(self):
         for i in range(self.side_length):
@@ -103,7 +133,7 @@ class Board:
             val_for_state = 1
         else:
             self.board[x2][y2] = self.second
-            val_for_state = 1
+            val_for_state = 2
 
         small = min(key1, key2)
         small_val = 0 if small == key1 else val_for_state
@@ -112,33 +142,7 @@ class Board:
         self.state = f"{self.state[:small]}{small_val}{self.state[small + 1:big]}{big_val}{self.state[big + 1:]}"
 
     def is_next(self, key1, key2):
-        neighbors = {
-            0: (1, 9),
-            1: (0, 2, 4),
-            2: (1, 14),
-            3: (4, 10),
-            4: (3, 5, 1, 7),
-            5: (6, 13),
-            6: (7, 11),
-            7: (6, 8, 4),
-            8: (7, 12),
-            9: (0, 10, 21),
-            10: (3, 9, 11, 18),
-            11: (10, 6, 15),
-            12: (8, 13, 17),
-            13: (12, 5, 14, 20),
-            14: (13, 2, 23),
-            15: (11, 16),
-            16: (15, 17, 19),
-            17: (16, 12),
-            18: (10, 19),
-            19: (18, 20, 16, 22),
-            20: (19, 13),
-            21: (9, 22),
-            22: (21, 23, 19),
-            23: (22, 14)
-        }
-        return key2 in neighbors[key1]
+        return key2 in self.neighbors[key1]
 
     def draggable(self, key1, key2, is_first=True):
         x1, y1 = self.playable_pos[key1]
@@ -195,8 +199,31 @@ class Board:
                 break
 
         self.make_the_move(key, is_first)
-        played.append(key)
+        played.add(key)
         return played
+
+    def is_first_symbol(self, is_first):
+        if is_first:
+            return self.first
+        return self.second
+
+    def com_drag(self, played, is_first=True):
+        for key, val in self.neighbors.items():
+            x, y = self.playable_pos[key]
+            if self.board[x][y] != self.is_first_symbol(is_first):
+                continue
+            if key in played:
+                for k in val:
+                    if k not in played:
+                        play_to = k
+                        break
+                else:
+                    continue
+                self.drag_piece(key, play_to, is_first=is_first)
+                played.remove(key)
+                played.add(play_to)
+                return played
+        return None
 
     def pvp(self):
         played = set()
@@ -230,4 +257,17 @@ class Board:
             print("Computer's turn: ")
 
             played = self.computer_move(played, not is_player_first)
+            self.show()
+
+        if is_computer_first:
+            self.com_drag(played, is_first=True)
+            self.show()
+
+        while True:
+            played = self.enter_drag(played, is_first=not is_computer_first)
+            self.show()
+
+            played = self.com_drag(played, is_first=is_computer_first)
+            if played is None:
+                return 'Player won'
             self.show()
